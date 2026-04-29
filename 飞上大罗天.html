@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>五行仙牌 - 东方神话卡牌游戏</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <audio id="bgMusic" loop>
+        <source src="assets/audio/飞上大罗天主题曲.mp3" type="audio/mpeg">
+    </audio>
+    <div class="login-screen" id="loginScreen">
+        <video class="login-video" autoplay muted loop playsinline>
+            <source src="assets/video/飞上大罗天.mp4" type="video/mp4">
+        </video>
+        <div class="login-brand">
+        </div>
+        <div class="login-buttons">
+            <button class="login-btn-new continue-btn" id="continueGameBtn" style="display: none;">继续游戏</button>
+            <button class="login-btn-new primary-btn" id="startGameBtn">开始游戏</button>
+            <button class="login-btn-new secondary-btn" id="immortalsBtn">神仙录</button>
+            <button class="login-btn-new secondary-btn" id="settingsBtn">设置</button>
+            <button class="login-btn-new danger-btn" id="exitGameBtn">退出游戏</button>
+        </div>
+    </div>
+
+    <div class="divine-beast-screen" id="divineBeastScreen" style="display: none;">
+        <video class="login-video" autoplay muted loop playsinline>
+            <source src="assets/video/飞上大罗天.mp4" type="video/mp4">
+        </video>
+        <div class="divine-beast-brand">
+            <div class="divine-beast-title">选择神兽之力</div>
+            <div class="divine-beast-subtitle">每种神兽都拥有独特的力量</div>
+        </div>
+        <div class="divine-beast-grid" id="divineBeastGrid"></div>
+        <div class="divine-beast-back">
+            <button class="btn btn-secondary" onclick="backToLogin()">返回</button>
+        </div>
+    </div>
+
+    <div class="game-screen" id="gameScreen">
+        <div class="game-container">
+            <div class="game-header" style="display: none;">
+                <h1>五行仙牌</h1>
+                <p>金木水火土 · 天兵战四方</p>
+            </div>
+
+            <div class="treasures-top-bar">
+                <!-- 装饰元素 -->
+                <div class="cloud-decoration-left"></div>
+                <div class="cloud-decoration-right"></div>
+                <div class="crane-left"></div>
+                <div class="crane-right"></div>
+                <div class="brocade-pattern"></div>
+                
+                <div class="treasures-top-title">羁绊</div>
+                <div class="treasures-top-list" id="treasuresTopList"></div>
+            </div>
+
+
+        </div>
+
+        <div class="main-area">
+            <div class="hand-area">
+                <div class="area-title">手牌</div>
+                <div class="general-seats">
+                    <div class="general-seat" id="generalSeat1">
+                        <div class="seat-label">天将席位 1</div>
+                        <div class="seat-slot"></div>
+                    </div>
+                    <div class="general-seat" id="generalSeat2">
+                        <div class="seat-label">天将席位 2</div>
+                        <div class="seat-slot"></div>
+                    </div>
+                    <div class="general-seat" id="generalSeat3">
+                        <div class="seat-label">天将席位 3</div>
+                        <div class="seat-slot"></div>
+                    </div>
+                    <div class="general-seat" id="generalSeat4">
+                        <div class="seat-label">天将席位 4</div>
+                        <div class="seat-slot"></div>
+                    </div>
+                    <div class="general-seat" id="generalSeat5">
+                        <div class="seat-label">天将席位 5</div>
+                        <div class="seat-slot"></div>
+                    </div>
+                    <div class="general-seat" id="generalSeat6">
+                        <div class="seat-label">天将席位 6</div>
+                        <div class="seat-slot"></div>
+                    </div>
+                    <div class="general-seat" id="generalSeat7">
+                        <div class="seat-label">天将席位 7</div>
+                        <div class="seat-slot"></div>
+                    </div>
+                    <div class="general-seat" id="generalSeat8">
+                        <div class="seat-label">天将席位 8</div>
+                        <div class="seat-slot"></div>
+                    </div>
+                </div>
+                <div class="damage-info-panel">
+                    <div class="damage-info-item">
+                        <div class="damage-info-row">
+                            <div class="damage-info-icon" id="bossAvatarContainer">💀</div>
+                            <div class="damage-bar-container">
+                                <div class="damage-value-display" id="damageValueDisplay">0/200</div>
+                                <div class="damage-bar" id="damageBar"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="damage-info-item" style="display: none;">
+                        <div class="damage-info-row">
+                            <div class="damage-info-label">当前伤害</div>
+                            <div class="damage-info-value" id="controlCurrentDamage">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hand-action-buttons">
+                    <button class="btn btn-skip" id="skipBtn" onclick="skipLevel()">跳过</button>
+                    <button class="btn btn-play" id="playBtn" onclick="playCards()">出牌</button>
+                    <button class="btn btn-discard" id="discardBtn" onclick="discardCards()">弃牌</button>
+                </div>
+                <div class="cards-container" id="handCards"></div>
+                <div class="hand-status-board">
+                    <div class="play-discard-item play-count-item">
+                        <div class="play-discard-label">出牌</div>
+                        <div class="play-discard-value" id="playCount">0/4</div>
+                    </div>
+                    <div class="play-discard-item discard-count-item">
+                        <div class="play-discard-label">弃牌</div>
+                        <div class="play-discard-value" id="discardCount">0/4</div>
+                    </div>
+                    <div class="deck-hand-item deck-count-item">
+                        <div class="deck-hand-label">卡池</div>
+                        <div class="deck-hand-value" id="deckCount">50</div>
+                    </div>
+                    <div class="deck-hand-item hand-limit-item">
+                        <div class="deck-hand-label">手牌上限</div>
+                        <div class="deck-hand-value" id="handCardLimit">8</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <div class="level-display">
+                    <div class="level-label">关卡</div>
+                    <div class="level-value" id="round">1</div>
+                </div>
+
+                <div class="stats-preview">
+                    <div class="stats-preview-item soldiers-item">
+                        <div class="stats-preview-label">总兵力</div>
+                        <div class="stats-preview-value" id="totalSoldiers">0</div>
+                    </div>
+                    <div class="multiply-icon">×</div>
+                    <div class="stats-preview-item power-item">
+                        <div class="stats-preview-label">灵力</div>
+                        <div class="stats-preview-value" id="spiritualPower">1</div>
+                    </div>
+                </div>
+
+                <div class="boss-debuff" id="bossDebuff" style="display: none;">
+                    <div class="boss-debuff-title">Boss战减益</div>
+                    <div class="boss-debuff-content" id="bossDebuffContent"></div>
+                </div>
+
+                <div class="pattern-preview" id="patternPreview">
+                    <div class="pattern-name" id="patternName">选择牌型</div>
+                    <div class="pattern-hint" id="patternHint">请选择1-5张牌</div>
+                </div>
+
+                <div class="action-buttons">
+                    <div class="xianyuan-shop-row">
+                        <div class="xianyuan-display"><img class="xianyuan-icon" src="assets/images/ui/仙元.png" alt="仙元"><span id="xianyuan">10</span></div>
+                        <button class="btn btn-shop" id="shopBtn" onclick="showShop()">仙界商店</button>
+                    </div>
+                    <div class="action-buttons-row">
+                        <button class="btn btn-stats" id="statsBtn" onclick="showStats()">牌型统计</button>
+                        <button class="btn btn-options" id="optionsBtn" onclick="showOptions()">选项</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="message-area">
+            <div class="area-title">游戏日志</div>
+            <div id="gameMessages"></div>
+        </div>
+
+        <div class="patterns-guide">
+            <div class="area-title">牌型说明</div>
+            <div class="patterns-grid" id="patternsGuideGrid">
+                <div class="pattern-item">
+                    <div class="pattern-item-name">散炁凡牌</div>
+                    <div class="pattern-item-desc">非其余任何牌型</div>
+                    <div class="pattern-item-mult">灵力 +1.0</div>
+                </div>
+                <div class="pattern-item">
+                    <div class="pattern-item-name">双数同辉</div>
+                    <div class="pattern-item-desc">2张同数字</div>
+                    <div class="pattern-item-mult">灵力 +2.0</div>
+                </div>
+                <div class="pattern-item">
+                    <div class="pattern-item-name">五灵汇世</div>
+                    <div class="pattern-item-desc">5张不同五行</div>
+                    <div class="pattern-item-mult">灵力 +3.0</div>
+                </div>
+                <div class="pattern-item">
+                    <div class="pattern-item-name">三才聚气</div>
+                    <div class="pattern-item-desc">3张同数字</div>
+                    <div class="pattern-item-mult">灵力 +6.0</div>
+                </div>
+                <div class="pattern-item">
+                    <div class="pattern-item-name">一元同宗</div>
+                    <div class="pattern-item-desc">5张同五行</div>
+                    <div class="pattern-item-mult">灵力 +8.0</div>
+                </div>
+                <div class="pattern-item">
+                    <div class="pattern-item-name">天序五连</div>
+                    <div class="pattern-item-desc">5张连续数字</div>
+                    <div class="pattern-item-mult">灵力 +10.0</div>
+                </div>
+                <div class="pattern-item">
+                    <div class="pattern-item-name">四象镇元</div>
+                    <div class="pattern-item-desc">4张同数字</div>
+                    <div class="pattern-item-mult">灵力 +12.0</div>
+                </div>
+                <div class="pattern-item">
+                    <div class="pattern-item-name">五行归一</div>
+                    <div class="pattern-item-desc">5张同五行+连续数字</div>
+                    <div class="pattern-item-mult">灵力 +20.0</div>
+                </div>
+                <div class="pattern-item">
+                    <div class="pattern-item-name">五极同尊</div>
+                    <div class="pattern-item-desc">5张相同数字</div>
+                    <div class="pattern-item-mult">灵力 +36.0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats-modal" id="statsModal">
+        <div class="stats-content">
+            <div class="stats-header">
+                <div class="stats-title">牌型统计</div>
+                <div class="stats-close" onclick="hideStats()">×</div>
+            </div>
+            <div class="stats-grid" id="statsGrid"></div>
+            <div class="stats-summary">
+                <div class="stats-summary-title">本局总出牌次数</div>
+                <div class="stats-summary-value" id="totalPlays">0</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="immortals-modal" id="immortalsModal">
+        <div class="immortals-content">
+            <div class="immortals-header">
+                <div class="immortals-title">神仙录</div>
+                <div class="immortals-close" onclick="hideImmortals()">×</div>
+            </div>
+            <div class="immortals-tabs">
+                <button class="immortals-tab active" data-tab="generals" onclick="switchImmortalsTab('generals')">天将牌</button>
+                <button class="immortals-tab" data-tab="treasures" onclick="switchImmortalsTab('treasures')">宝器牌</button>
+                <button class="immortals-tab" data-tab="bonds" onclick="switchImmortalsTab('bonds')">羁绊</button>
+                <button class="immortals-tab" data-tab="bossdebuffs" onclick="switchImmortalsTab('bossdebuffs')">Boss减益</button>
+            </div>
+            <div class="immortals-grid" id="immortalsGrid"></div>
+        </div>
+    </div>
+
+    <div class="shop-modal" id="shopModal">
+        <div class="shop-content">
+            <div class="shop-header">
+                <div class="shop-title">仙界商店</div>
+                <div class="shop-close" onclick="hideShop()">×</div>
+            </div>
+            <div class="shop-info">
+                <div class="shop-summary-row">
+                    <div class="shop-level">商店等级：<span id="shopLevel">Lv1</span></div>
+                    <div class="shop-xianyuan">当前仙元：<img class="xianyuan-icon" src="assets/images/ui/仙元.png" alt="仙元" style="width: 20px; height: 20px; vertical-align: middle;"><span id="shopXianyuan">10</span></div>
+                </div>
+                <div class="shop-exp">
+                    <div class="shop-exp-bar">
+                        <div class="shop-exp-fill" id="shopExpFill"></div>
+                        <div class="shop-exp-text" id="shopExpText">0/4</div>
+                    </div>
+                </div>
+            </div>
+            <div class="shop-probability-panel">
+                <div class="shop-probability" id="shopProbability">概率：<img class="xianyuan-icon" src="assets/images/ui/仙元.png" alt="仙元" style="width: 16px; height: 16px; vertical-align: middle;">1（100%）</div>
+            </div>
+            <div class="shop-refresh">
+                <button class="btn btn-refresh" id="refreshShopBtn" onclick="refreshShop()">刷新商店 (<img class="xianyuan-icon" src="assets/images/ui/仙元.png" alt="仙元" style="width: 16px; height: 16px; vertical-align: middle;"><span id="refreshCost">1</span>)<span class="free-refresh-badge" id="freeRefreshBadge">0</span></button>
+                <button class="btn btn-exchange-exp" id="exchangeShopExpBtn" onclick="exchangeShopExp()">换取经验 (<img class="xianyuan-icon" src="assets/images/ui/仙元.png" alt="仙元" style="width: 16px; height: 16px; vertical-align: middle;">2 → EXP 2)</button>
+                <button class="btn btn-lock-shop" id="lockShopBtn" onclick="toggleShopLock()">🔓 未锁定</button>
+            </div>
+            <div class="shop-grid" id="shopGrid"></div>
+        </div>
+    </div>
+
+    <div class="general-slot-modal" id="generalSlotModal">
+        <div class="general-slot-content">
+            <div class="general-slot-header">
+                <div>
+                    <div class="general-slot-kicker">天门解封</div>
+                    <div class="general-slot-title" id="generalSlotTitle">天将席位</div>
+                </div>
+                <div class="general-slot-close" onclick="hideGeneralSlotScene()">×</div>
+            </div>
+            <div class="general-slot-body">
+                <div class="general-slot-seal">
+                    <div class="general-slot-seal-ring"></div>
+                    <div class="general-slot-seal-number" id="generalSlotNumber">4</div>
+                    <div class="general-slot-seal-text" id="generalSlotSealText">封印中</div>
+                </div>
+                <div class="general-slot-panel">
+                    <div class="general-slot-summary" id="generalSlotSummary"></div>
+                    <div class="general-slot-conditions" id="generalSlotConditions"></div>
+                    <button class="btn general-slot-buy-btn" id="generalSlotBuyBtn" onclick="buyGeneralSlotFromScene()">解封席位</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="level-complete-modal" id="levelCompleteModal">
+        <div class="level-complete-content">
+            <div class="level-complete-header">
+                <div class="level-complete-title">关卡完成</div>
+            </div>
+            <div class="level-complete-info">
+                <div class="level-complete-level-damage-row">
+                    <div class="level-complete-level">当前关卡：<span id="completeLevel">1</span>重天</div>
+                    <div class="level-complete-damage">造成伤害：<span id="completeDamage">0</span></div>
+                </div>
+                <div class="level-complete-bonus-row">
+                    <div class="level-complete-convert">剩余操作转化：<img class="xianyuan-icon" src="assets/images/ui/仙元.png" alt="仙元" style="width: 16px; height: 16px; vertical-align: middle;"><span id="completeConvert">0</span></div>
+                    <div class="level-complete-interest">利息所得：<img class="xianyuan-icon" src="assets/images/ui/仙元.png" alt="仙元" style="width: 16px; height: 16px; vertical-align: middle;"><span id="completeInterest">0</span></div>
+                </div>
+                <div class="level-complete-next-boss" id="nextBossPreview" style="display: none;">
+                    <div class="next-boss-orb" id="nextBossAvatar"></div>
+                    <div class="next-boss-text">
+                        <div class="next-boss-kicker" id="nextBossKicker">即将遭遇</div>
+                        <div class="next-boss-name" id="nextBossName">Boss战</div>
+                        <div class="next-boss-desc" id="nextBossDesc"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="level-complete-treasures">
+                <div class="level-complete-treasures-title">选择一件宝器</div>
+                <div class="level-complete-treasures-grid" id="levelTreasuresGrid"></div>
+            </div>
+            <div class="level-complete-actions">
+                <button class="btn btn-play" onclick="selectTreasureAndNextLevel()">进入下一关</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="game-fail-modal" id="gameFailModal">
+        <div class="game-fail-content">
+            <div class="game-fail-header">
+                <div class="game-fail-title">挑战失败</div>
+            </div>
+            <div class="game-fail-info">
+                <div class="game-fail-message">消灭异类失败，请大侠重头再来！</div>
+                <div class="game-fail-damage-info">
+                    <div class="game-fail-level">当前关卡：<span id="failLevel">1</span>重天</div>
+                    <div class="game-fail-damage">造成伤害：<span id="failDamage">0</span></div>
+                    <div class="game-fail-required">需要伤害：<span id="failRequired">0</span></div>
+                    <div class="game-fail-plays">总出牌数：<span id="failPlays">0</span></div>
+                    <div class="game-fail-xianyuan">收获仙元：<span id="failXianyuan">0</span></div>
+                </div>
+            </div>
+            <div class="game-fail-actions">
+                <button class="btn btn-play" onclick="returnToLogin()">返回登录界面</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="taixu-modal" id="taixuModal">
+        <div class="taixu-content">
+            <div class="taixu-header">
+                <div class="taixu-title">三十六重天已通</div>
+                <div class="taixu-subtitle">本次通关天将阵容</div>
+            </div>
+            <div class="taixu-lineup" id="taixuLineup"></div>
+            <div class="taixu-actions">
+                <button class="btn taixu-end-btn" onclick="finishGameFromTaixuChoice()">结束游戏</button>
+                <button class="btn taixu-trial-btn" onclick="enterTaixuTrial()">进入太虚试炼</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="settings-modal" id="settingsModal">
+        <div class="settings-content">
+            <div class="settings-header">
+                <div class="settings-title">设置</div>
+                <div class="settings-close" onclick="hideSettings()">×</div>
+            </div>
+            <div class="settings-body">
+                <div class="settings-item">
+                    <div class="settings-item-label">背景音乐</div>
+                    <div class="settings-item-control">
+                        <span class="volume-icon" id="volumeIcon">🔊</span>
+                        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="70" oninput="changeVolume(this.value)">
+                        <span class="volume-value" id="volumeValue">70%</span>
+                    </div>
+                </div>
+                <div class="settings-item">
+                    <div class="settings-item-label">音效音量</div>
+                    <div class="settings-item-control">
+                        <span class="volume-icon" id="effectVolumeIcon">🔊</span>
+                        <input type="range" class="volume-slider" id="effectVolumeSlider" min="0" max="100" value="70" oninput="changeEffectVolume(this.value)">
+                        <span class="volume-value" id="effectVolumeValue">70%</span>
+                    </div>
+                </div>
+                <div class="settings-item">
+                    <div class="settings-item-label">音乐选择</div>
+                    <div class="music-select-group">
+                        <button class="music-select-btn active" id="musicBtn1" onclick="switchBGMusic(1)">主题曲</button>
+                        <button class="music-select-btn" id="musicBtn2" onclick="switchBGMusic(2)">主题曲2</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="options-modal" id="optionsModal">
+        <div class="options-content">
+            <div class="options-header">
+                <div class="options-title">选项</div>
+                <div class="options-close" onclick="hideOptions()">×</div>
+            </div>
+            <div class="options-body">
+                <div class="settings-item">
+                    <div class="settings-item-label">背景音乐</div>
+                    <div class="settings-item-control">
+                        <span class="volume-icon" id="volumeIcon">🔊</span>
+                        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="70" oninput="changeVolume(this.value)">
+                        <span class="volume-value" id="volumeValue">70%</span>
+                    </div>
+                </div>
+                <div class="settings-item">
+                    <div class="settings-item-label">音效音量</div>
+                    <div class="settings-item-control">
+                        <span class="volume-icon" id="effectVolumeIcon">🔊</span>
+                        <input type="range" class="volume-slider" id="effectVolumeSlider" min="0" max="100" value="70" oninput="changeEffectVolume(this.value)">
+                        <span class="volume-value" id="effectVolumeValue">70%</span>
+                    </div>
+                </div>
+                <div class="settings-item">
+                    <div class="settings-item-label">音乐选择</div>
+                    <div class="music-select-group">
+                        <button class="music-select-btn active" id="musicBtn1" onclick="switchBGMusic(1)">主题曲</button>
+                        <button class="music-select-btn" id="musicBtn2" onclick="switchBGMusic(2)">主题曲2</button>
+                    </div>
+                </div>
+                <div class="options-actions">
+                    <button class="options-btn options-btn-new" onclick="confirmNewGame()">开始新游戏</button>
+                    <button class="options-btn options-btn-logout" onclick="returnToLogin()">返回登录界面</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="general-detail-modal" id="generalDetailModal">
+        <div class="general-detail-content">
+            <div class="general-detail-header">
+                <div class="general-detail-title">天将详情</div>
+                <div class="general-detail-close" onclick="hideGeneralDetail()">×</div>
+            </div>
+            <div class="general-detail-body">
+                <div class="general-detail-left">
+                    <div class="general-detail-info">
+                        <div class="general-detail-symbol" id="detailSymbol"></div>
+                        <div class="general-detail-info-right">
+                            <div class="general-detail-name" id="detailName"></div>
+                            <div class="general-detail-title" id="detailTitle"></div>
+                            <div class="general-detail-stars" id="detailStars"></div>
+                            <div class="general-detail-count" id="detailCount"></div>
+                        </div>
+                    </div>
+                    <div class="general-detail-skills">
+                        <div class="general-detail-skills-title">技能</div>
+                        <div id="detailSkills"></div>
+                    </div>
+                    <div class="deck-observe-panel" id="deckObservePanel"></div>
+                </div>
+            </div>
+            <div class="general-detail-actions">
+                <button class="btn btn-observe-deck" id="observeDeckBtn" onclick="useJigongObserve()">观测牌序</button>
+                <button class="btn btn-exit" id="sellGeneralBtn" onclick="sellGeneral()">出售</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="sell-general-modal" id="sellGeneralModal">
+        <div class="sell-general-content">
+            <div class="sell-general-header">
+                <div class="sell-general-title">出售天将</div>
+                <div class="sell-general-close" onclick="hideSellGeneralConfirm()">×</div>
+            </div>
+            <div class="sell-general-info">
+                <div class="sell-general-symbol" id="sellGeneralSymbol"></div>
+                <div class="sell-general-text">
+                    <div class="sell-general-name" id="sellGeneralName"></div>
+                    <div class="sell-general-desc" id="sellGeneralDesc"></div>
+                    <div class="sell-general-price" id="sellGeneralPrice"></div>
+                </div>
+            </div>
+            <div class="sell-general-warning">出售后该天将将离开席位，此操作不可撤回。</div>
+            <div class="sell-general-actions">
+                <button class="sell-general-btn sell-general-cancel" onclick="hideSellGeneralConfirm()">取消</button>
+                <button class="sell-general-btn sell-general-confirm" onclick="confirmSellGeneral()">确认出售</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bond-detail-modal" id="bondDetailModal">
+        <div class="bond-detail-content">
+            <div class="bond-detail-header">
+                <div class="bond-detail-title">羁绊详情</div>
+                <div class="bond-detail-close" onclick="hideBondDetail()">×</div>
+            </div>
+            <div class="bond-detail-body">
+                <div class="bond-detail-info">
+                    <div class="bond-detail-name" id="bondDetailName"></div>
+                    <div class="bond-detail-desc" id="bondDetailDesc"></div>
+                    <div class="bond-detail-progress" id="bondDetailProgress"></div>
+                </div>
+                <div class="bond-detail-members">
+                    <div class="bond-detail-members-title">所需天将牌</div>
+                    <div class="bond-detail-members-grid" id="bondDetailMembersGrid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/cards-data.js"></script>
+    <script src="js/divine-beasts.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>
