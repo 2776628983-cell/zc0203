@@ -1506,7 +1506,8 @@ function renderLevelCompleteState() {
     document.getElementById('completeInterest').textContent = interest;
     renderNextBossPreview();
     
-    if (!gameState.levelTreasures || gameState.levelTreasures.length === 0) {
+        const desiredTreasureChoiceCount = Math.min(3, Object.keys(TREASURES).length);
+    if (!gameState.levelTreasures || gameState.levelTreasures.length < desiredTreasureChoiceCount) {
         generateLevelTreasures();
     }
     renderLevelTreasures();
